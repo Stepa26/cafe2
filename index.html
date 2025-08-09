@@ -1,0 +1,869 @@
+
+
+<!DOCTYPE html>
+<html lang="el" data-theme="dark">
+<head>
+  <!-- Ορισμός χαρακτήρων & responsive meta -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Περιγραφή για SEO / sharing -->
+  <meta name="description" content="Το αγαπημένο στέκι για καφέ στις Σέρρες - Serres Coffee Spot" />
+  <title>Serres Coffee Spot</title>
+
+  <!-- Φόρτωση γραμματοσειράς Urbanist όπως στον αρχικό σου κώδικα -->
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------
+       Colors & theme variables
+       (Κρατάμε ακριβώς την ίδια παλέτα που έδωσες)
+       ------------------------- */
+
+    /* Ο βασικός σκοτεινός θεματικός χώρος (root variables) */
+    :root{
+      --bg: #121212;
+      --text: #e5e5e5;
+      --primary: #1e1e1e;
+      --secondary: #1a1a1a;
+      --accent: #00bfa6;
+      --highlight: #5fe3d0;
+      --card-bg: #1c1c1c;
+      --shadow: rgba(0,0,0,0.5);
+      --glass: rgba(255,255,255,0.03);
+    }
+
+    /* Όταν επιλέγεται light theme, αντικαθίστανται οι μεταβλητές */
+    [data-theme="light"]{
+      --bg: #f9f9f9;
+      --text: #1a1a1a;
+      --primary: #ffffff;
+      --secondary: #f1f1f1;
+      --accent: #00bfa6;
+      --highlight: #008f7a;
+      --card-bg: #ffffff;
+      --shadow: rgba(0,0,0,0.15);
+      --glass: rgba(0,0,0,0.03);
+    }
+
+    /* -------------------------
+       Base styles
+       - βασικό reset / defaults
+       ------------------------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+
+    /* Στυλ σώματος: γράμμα Urbanist, background, transitions */
+    body{
+      font-family: 'Urbanist', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition: background .35s ease, color .35s ease;
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    /* Default για anchor και εικόνες */
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+
+    /* -------------------------
+       Top controls (theme toggle & burger button)
+       - τοποθετούνται πάνω δεξιά/αριστερά
+       ------------------------- */
+    .top-controls{
+      position:fixed;
+      top:14px;
+      right:16px;
+      z-index:1200;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* Στυλ κουμπιού εναλλαγής θεμάτων */
+    .theme-toggle{
+      background:var(--accent);
+      color:var(--primary);
+      border:0;
+      padding:9px 14px;
+      border-radius:28px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,0.12);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .theme-toggle:active{transform:scale(.98)}
+    .theme-toggle:focus{outline:3px solid rgba(0,0,0,0.08)}
+
+    /* Κουμπί hamburger - από προεπιλογή κρυφό σε desktop */
+    .burger{
+      display:none;
+      position:fixed;
+      top:14px;
+      left:16px;
+      z-index:1200;
+      background:var(--accent);
+      color:var(--primary);
+      border:0;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    /* -------------------------
+       Header / Nav styles
+       ------------------------- */
+    header{
+      background:var(--primary);
+      color:var(--accent);
+      text-align:center;
+      padding:28px 20px;
+      letter-spacing:1px;
+      position:relative;
+      z-index:800;
+    }
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:center;
+    }
+    .brand h1{font-size:1.5rem;margin:0;font-weight:700}
+    .brand p{font-size:.9rem;margin:0;color:var(--accent);opacity:.95}
+
+    /* Ενδεικτικό nav (το είχες αφαιρέσει, αλλά κρατάμε το στυλ για μελλοντική χρήση) */
+    nav.nav-links{
+      display:flex;
+      justify-content:center;
+      gap:28px;
+      background:var(--secondary);
+      padding:12px 18px;
+      transition:height .28s ease;
+    }
+    nav.nav-links a{
+      color:var(--text);
+      font-weight:600;
+      position:relative;
+      padding:6px 4px;
+    }
+    /* underline effect στα links */
+    nav.nav-links a::after{
+      content:'';
+      position:absolute;
+      bottom:-6px;
+      left:0;
+      width:0;
+      height:2px;
+      background:var(--accent);
+      transition:width .25s ease;
+    }
+    nav.nav-links a:hover::after{width:100%}
+
+    /* -------------------------
+       Mobile behavior για το nav (slide-down)
+       ------------------------- */
+    @media (max-width: 900px){
+      .burger{display:block}
+      nav.nav-links{
+        position:absolute;
+        top:78px;
+        left:0;
+        width:100%;
+        flex-direction:column;
+        align-items:center;
+        gap:12px;
+        padding:18px 0;
+        background:var(--secondary);
+        display:none; /* toggled via .show */
+      }
+      nav.nav-links.show{display:flex}
+    }
+
+    /* -------------------------
+       HERO section
+       - background εικόνα που δεν καλύπτει ολόκληρο το viewport
+       ------------------------- */
+    .hero{
+      position:relative;
+      padding:72px 20px 48px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      min-height:360px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.15));
+      overflow:visible;
+    }
+
+    /* Το container με background-image (όχι full-screen) */
+    .hero-bg{
+      position:absolute;
+      inset:0;
+      top:0;
+      height:48%;
+      background-image: url("https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1600&q=80");
+      background-position:center;
+      background-size:cover;
+      filter:contrast(.9) saturate(.9);
+      z-index:0;
+      opacity:.95;
+      pointer-events:none;
+    }
+
+    /* Επάνω gradient overlay για καλύτερη αναγνωσιμότητα κειμένου */
+    .hero::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.65));
+      z-index:1;
+    }
+
+    /* Δομή hero-content: δύο στήλες (text + slideshow card) */
+    .hero-content{
+      position:relative;
+      z-index:2;
+      max-width:1100px;
+      width:100%;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:28px;
+      align-items:center;
+      padding:18px;
+    }
+
+    /* -------------------------
+       Left column text (hero-copy)
+       ------------------------- */
+    .hero-copy h1{
+      font-size: clamp(1.6rem, 3.4vw, 3rem);
+      margin-bottom:10px;
+      font-weight:700;
+      background: rgba(0,0,0,0.45);
+      display:inline-block;
+      padding:16px 20px;
+      border-radius:14px;
+      backdrop-filter: blur(6px);
+    }
+    .hero-copy p{
+      margin-top:8px;
+      font-size:1rem;
+      color:var(--text);
+      opacity:.95;
+    }
+
+    /* -------------------------
+       Right column - slideshow card
+       - card που περιέχει slides + controls
+       ------------------------- */
+    .hero-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+      border-radius:14px;
+      padding:14px;
+      box-shadow: 0 12px 30px var(--shadow);
+      border:1px solid rgba(255,255,255,0.03);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+    }
+
+    /* Container των slides: fixed height, overflow hidden */
+    .hero-card .slides{
+      width:100%;
+      height:240px;
+      border-radius:10px;
+      overflow:hidden;
+      position:relative;
+      background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.2));
+    }
+
+    /* -------------------------
+       Slide item styles
+       - κάθε .slide είναι positioned absolute και εμφανίζεται με .visible
+       ------------------------- */
+    .slide{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      transition:opacity .9s cubic-bezier(.2,.9,.2,1), transform .9s cubic-bezier(.2,.9,.2,1);
+      opacity:0;
+      transform:scale(.96) translateY(6px);
+      will-change:opacity, transform;
+      background-size:cover;
+      background-position:center;
+    }
+    /* Όταν έχουμε .visible, το slide φαίνεται */
+    .slide.visible{
+      opacity:1;
+      transform:scale(1) translateY(0);
+    }
+    /* caption πάνω στο slide */
+    .slide .caption{
+      background: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.45));
+      color:white;
+      padding:10px 12px;
+      border-radius:10px;
+      backdrop-filter: blur(4px);
+      font-weight:600;
+    }
+
+    /* Δείκτες / dots κάτω από το slideshow */
+    .slide-controls{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+      align-items:center;
+      justify-content:center;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:rgba(255,255,255,0.2);
+      border:1px solid rgba(255,255,255,0.06);
+      cursor:pointer;
+      transition:transform .15s ease, background .2s ease;
+    }
+    .dot.active{background:var(--accent); transform:scale(1.12)}
+
+    /* -------------------------
+       CTA buttons στο hero
+       ------------------------- */
+    .hero-cta{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      margin-top:8px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      background:var(--accent);
+      color:var(--primary);
+      padding:12px 20px;
+      border-radius:40px;
+      font-weight:700;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      text-decoration:none;
+      box-shadow:0 8px 24px rgba(0,0,0,0.12);
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn:hover{transform:translateY(-4px); box-shadow:0 18px 36px rgba(0,0,0,0.18)}
+    .btn.secondary{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.06)}
+
+    /* -------------------------
+       Social icons row (στο hero / footer)
+       ------------------------- */
+    .social-row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+      margin-top:10px;
+    }
+    .social-row a{
+      width:42px;height:42px;border-radius:50%;
+      display:inline-grid;place-items:center;
+      background:var(--accent); color:var(--primary);
+      text-decoration:none; box-shadow:0 6px 18px rgba(0,0,0,0.12);
+      transition:transform .12s ease, background .18s ease;
+    }
+    .social-row a:hover{transform:translateY(-4px); background:var(--highlight)}
+
+    /* -------------------------
+       Sections - About / Gallery / Contact
+       - κάρτες με δύο στήλες (εναλλαγή πλευρών για ποικιλία)
+       ------------------------- */
+    main{padding:24px 18px 80px}
+    .section{
+      max-width:1100px;
+      margin:36px auto;
+      background:var(--card-bg);
+      border-radius:12px;
+      padding:28px;
+      box-shadow:0 12px 30px var(--shadow);
+      border:1px solid rgba(255,255,255,0.02);
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:22px;
+      align-items:center;
+      transition:transform .3s ease;
+    }
+    /* Σε κάθε δεύτερη section αναποδογυρίζουμε στήλες για ποικιλία */
+    .section:nth-child(even){grid-template-columns:420px 1fr}
+    .section h2{margin-bottom:12px}
+    .section p{color:var(--text);opacity:.95}
+
+    /* Grid για gallery */
+    .gallery-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+    .gallery-grid img{width:100%;height:160px;object-fit:cover;border-radius:8px;transition:transform .25s ease, box-shadow .25s ease}
+    .gallery-grid img:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(0,0,0,0.25)}
+
+    /* Container χάρτη */
+    .map-container iframe{width:100%;height:300px;border:0;border-radius:10px;margin-top:10px}
+
+    /* -------------------------
+       Responsive breakpoints: μικρότερες οθόνες
+       ------------------------- */
+    @media (max-width:1100px){
+      .hero-content{grid-template-columns:1fr; padding:8px}
+      .hero-card{order: -1}
+      .section, .section:nth-child(even){grid-template-columns:1fr; padding:20px; gap:18px}
+      .gallery-grid{grid-template-columns:repeat(2,1fr)}
+      .hero-bg{height:42%}
+    }
+    @media (max-width:640px){
+      header{padding:16px 12px}
+      .brand h1{font-size:1.1rem}
+      nav.nav-links{top:66px}
+      .hero{padding:56px 12px 36px; min-height:300px}
+      .hero-bg{height:36%}
+      .slide{padding:8px}
+      .hero-card .slides{height:180px}
+      .gallery-grid{grid-template-columns:1fr}
+    }
+
+    /* -------------------------
+       Footer styles
+       ------------------------- */
+    footer{
+      background:var(--primary);
+      padding:28px 18px;
+      text-align:center;
+      color:var(--accent);
+      margin-top:28px;
+    }
+    footer a{color:var(--accent); text-decoration:underline}
+
+    /* -------------------------
+       Section reveal animation helpers
+       ------------------------- */
+    .section.hidden{opacity:0; transform:translateY(18px)}
+    .section.visible{opacity:1; transform:translateY(0); transition:all .6s cubic-bezier(.2,.85,.25,1)}
+  </style>
+</head>
+<body>
+  <!-- -------------------------
+       Top buttons: burger (mobile) & theme toggle
+       - το κουμπί burger ειναι απλώς ορατό, αλλά αν δεν υπάρχει top nav δεν θα ανοίγει τίποτα
+       - το theme-btn δείχνει την τρέχουσα λειτουργία (Dark / Light)
+       ------------------------- -->
+  <button class="burger" aria-label="Άνοιγμα μενού" id="burger-btn">☰</button>
+  <div class="top-controls" aria-hidden="false">
+    <!-- Button now shows the CURRENT mode (Dark when in dark mode, Light when in light mode) -->
+    <button id="theme-btn" class="theme-toggle" aria-pressed="false">Dark</button>
+  </div>
+
+  <!-- -------------------------
+       Header: brand / όνομα καταστήματος
+       ------------------------- -->
+  <header>
+    <div class="brand" role="banner">
+      <div>
+        <h1>Serres Coffee Spot</h1>
+        <p>Το αγαπημένο στέκι καφέ στην καρδιά των Σερρών</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTE: top horizontal navigation removed as requested -->
+  <!-- (original <nav id="main-nav"...> has been intentionally removed) -->
+
+  <!-- -------------------------
+       HERO section
+       - περιέχει hero-bg, κείμενο, cta κουμπιά, social links και slideshow card
+       ------------------------- -->
+  <section class="hero" aria-label="Hero section with main call to actions">
+    <!-- Φόντο εικόνα - ώστε να μην καλύπτει όλη την οθόνη σε mobile -->
+    <div class="hero-bg" aria-hidden="true"></div>
+
+    <!-- Περιεχόμενο hero: αριστερά κείμενο, δεξιά slideshow card -->
+    <div class="hero-content">
+      <div class="hero-copy">
+        <h1>Ξεκίνα τη μέρα σου με χαμόγελο & καφέ!</h1>
+        <p>Specialty καφέδες, φρέσκα ροφήματα και μικρά snacks — χαλαρό, νεανικό περιβάλλον.</p>
+
+        <!-- -------------------------
+             CTA buttons (Δες Μενού, eFood, Wolt)
+             - κάθε btn είναι link, με inline SVG ως εικονίδιο
+             ------------------------- -->
+        <div class="hero-cta" role="region" aria-label="Primary call to action buttons">
+          <a class="btn" href="menu.html#top" aria-label="Δες το Μενού">
+            <!-- simple icon (cup) -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:block">
+              <path d="M3 7h14v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V7z" fill="currentColor"></path>
+              <path d="M8 19a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3" fill="currentColor" opacity=".9"></path>
+            </svg>
+            Δες το Μενού
+          </a>
+
+          <a class="btn" href="https://efood.gr" target="_blank" rel="noopener" aria-label="Παράγγειλε με eFood">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 3h18v18H3z" fill="none"/><path d="M6 12l6 6 6-6H6z"/>
+            </svg>
+            eFood
+          </a>
+
+          <a class="btn" href="https://wolt.com" target="_blank" rel="noopener" aria-label="Παράγγειλε με Wolt">
+            <svg width="18" height="18" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+              <circle cx="16" cy="16" r="16" fill="none"/><path d="M12 8l8 8-8 8V8z"/>
+            </svg>
+            Wolt
+          </a>
+        </div>
+
+        <!-- -------------------------
+             Social icons row: Instagram, TikTok, Facebook
+             - χρησιμοποιείς link προς τα social profiles
+             ------------------------- -->
+        <div class="social-row" aria-label="Social links">
+          <!-- Instagram -->
+          <a href="https://instagram.com/serrescoffee" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 2A3.75 3.75 0 004 7.75v8.5A3.75 3.75 0 007.75 20h8.5a3.75 3.75 0 003.75-3.75v-8.5A3.75 3.75 0 0016.25 4h-8.5zm8.72 1.28a1.07 1.07 0 110 2.14 1.07 1.07 0 010-2.14zM12 7a5 5 0 110 10 5 5 0 010-10z"/>
+            </svg>
+          </a>
+
+          <!-- TikTok -->
+          <a href="https://tiktok.com/@serrescoffee" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M9 2v6a4 4 0 004 4h3v4h-3a7 7 0 01-7-7V4h3z"/>
+            </svg>
+          </a>
+
+          <!-- Facebook -->
+          <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M22 12A10 10 0 1012 22V14.6h-1.6V12H12V10.1c0-1.6.96-2.5 2.42-2.5.7 0 1.43.12 1.43.12v1.57h-.8c-.79 0-1.03.5-1.03 1.02V12h1.76l-.28 2.6H14.02V22A10 10 0 0022 12z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- -------------------------
+           Right side card with slides
+           - slides: 3 items με background-images
+           ------------------------- -->
+      <div class="hero-card" aria-hidden="false">
+        <!-- Το wrapper των slides -->
+        <div class="slides" id="slides" aria-live="polite">
+          <!-- Slide 1 (default visible) -->
+          <div class="slide visible" data-index="0" style="background-image:url('https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=1200&q=80')">
+            <div class="caption">Espresso of the week — Δοκίμασέ το!</div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="slide" data-index="1" style="background-image:url('https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=1200&q=80')">
+            <div class="caption">Freddo Cappuccino — δροσιά & γεύση</div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="slide" data-index="2" style="background-image:url('images/croissant.jpg')">
+            <div class="caption">Σπιτικά γλυκά κάθε μέρα</div>
+          </div>
+        </div>
+
+        <!-- Δείκτες (dots) για χειροκίνητη επιλογή slide -->
+        <div class="slide-controls" aria-hidden="false">
+          <div class="dot active" data-dot="0" tabindex="0" role="button" aria-label="Slide 1"></div>
+          <div class="dot" data-dot="1" tabindex="0" role="button" aria-label="Slide 2"></div>
+          <div class="dot" data-dot="2" tabindex="0" role="button" aria-label="Slide 3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------------------------
+       Main content sections:
+       - About, Gallery, Contact
+       - κάθε section έχει class .section και απόκρυψη στην αρχή (hidden)
+       - IntersectionObserver θα τα εμφανίσει σταδιακά
+       ------------------------- -->
+  <main>
+    <!-- About section -->
+    <section id="about" class="section hidden" tabindex="0" aria-labelledby="about-title">
+      <div>
+        <h2 id="about-title">Σχετικά με εμάς</h2>
+        <p>Το Serres Coffee Spot είναι ένας φιλόξενος χώρος στην καρδιά των Σερρών. Προσφέρουμε specialty καφέδες, φρέσκα ροφήματα και γλυκά snacks σε ένα νεανικό και χαλαρό περιβάλλον.</p>
+        <p style="margin-top:12px;font-weight:600">Ώρες λειτουργίας: Δευτ-Κυρ 08:00 - 22:00</p>
+      </div>
+      <!-- Εικόνα - loading lazy για απόδοση -->
+      <img src="images/outside2.jpg" alt="Εσωτερικός χώρος καφέ" loading="lazy">
+    </section>
+
+    <!-- Gallery section -->
+    <section id="gallery" class="section hidden" tabindex="0" aria-labelledby="gallery-title">
+      <div>
+        <h2 id="gallery-title">Φωτογραφίες του χώρου</h2>
+
+        <div class="gallery-grid" style="margin-top:12px;">
+          <img src="images/croissant.jpg" alt="Καφές και croissant" loading="lazy">
+          <img src="images/freddo-espresso.jpg" alt="Barista στο bar" loading="lazy">
+          <img src="images/outsidecaffe.jpg" alt="Καθίσματα εξωτερικού χώρου" loading="lazy">
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin-bottom:10px">Μικρές γεύσεις</h2>
+        <p>Δοκίμασε τα house-made muffins και cookies μας — ιδανικά με τον καφέ σου.</p>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn secondary" href="#">Προσφορές</a>
+          <a class="btn" href="menu.html">Όλο το Μενού</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact section -->
+    <section id="contact" class="section hidden" tabindex="0" aria-labelledby="contact-title">
+      <div>
+        <h2 id="contact-title">Επικοινωνία</h2>
+        <p><strong>📍 Τοποθεσία:</strong> Κεντρική Πλατεία, Σέρρες</p>
+        <p><strong>📞 Τηλέφωνο:</strong> <a href="tel:2321012345" aria-label="Καλέστε 23210 12345">23210 12345</a></p>
+        <p><strong>📧 Email:</strong> <a href="mailto:info@serrescoffee.gr" aria-label="Στείλτε email στο info@serrescoffee.gr">info@serrescoffee.gr</a></p>
+        <div style="margin-top:12px;">
+          <a class="btn" href="https://efood.gr" target="_blank">Παράγγειλε στο eFood</a>
+          <a class="btn" href="https://wolt.com" target="_blank">Παράγγειλε στο Wolt</a>
+        </div>
+      </div>
+
+      <!-- Map container: iframe embed Google Maps (το src είναι πλήρες σε αυτό που έστειλες) -->
+      <div class="map-container" aria-hidden="false">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3091.5598932825046!2d23.54888931524261!3d41.08501487929157!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14a9bfc11d5df45f%3A0x9a735a3f1d234bbc!2sSerres%20Center!5e0!3m2!1sel!2sgr!4v1691402314450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Χάρτης τοποθεσίας Serres Coffee Spot"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <!-- -------------------------
+       Footer
+       ------------------------- -->
+  <footer>
+    <p>&copy; 2025 Serres Coffee Spot | All rights reserved</p>
+    <p><a href="#top">Επιστροφή στην αρχή</a></p>
+  </footer>
+
+  <!-- -------------------------
+       JavaScript: interactivity
+       - παρακάτω έχεις τα IIFEs (Immediately Invoked Function Expressions)
+         για κάθε ανεξάρτητο behavior: theme toggle, burger guard, slides, observer, accessibility
+       - όλα τα σχόλια εξηγούν τη λειτουργία πάνω από κάθε μπλοκ
+       ------------------------- -->
+  <script>
+    /* -------------------------
+       Theme toggle (Light <-> Dark)
+       - Διαχειρίζεται localStorage
+       - Το κουμπί δείχνει την ΤΡΕΧΟΥΣΑ λειτουργία (Dark/Light)
+       ------------------------- */
+    (function(){
+      const themeBtn = document.getElementById('theme-btn');
+      const root = document.documentElement;
+
+      /* setLightOnUI(true) => ενεργοποιεί light theme και ενημερώνει το UI
+         setLightOnUI(false) => dark theme (προεπιλογή) */
+      function setLightOnUI(isLight){
+        if(isLight){
+          root.setAttribute('data-theme','light');
+          // show the CURRENT mode (Light)
+          themeBtn.textContent = 'Light';
+          themeBtn.setAttribute('aria-pressed','true');
+          localStorage.setItem('theme','light');
+        } else {
+          root.removeAttribute('data-theme');
+          // show the CURRENT mode (Dark)
+          themeBtn.textContent = 'Dark';
+          themeBtn.setAttribute('aria-pressed','false');
+          localStorage.removeItem('theme');
+        }
+      }
+
+      // init: αν έχουμε αποθηκευμένο 'light' τότε setLightOnUI(true), αλλιώς dark
+      setLightOnUI(localStorage.getItem('theme') === 'light');
+
+      // on click, αντιστρέφουμε το theme
+      themeBtn.addEventListener('click', () => {
+        setLightOnUI(!(root.getAttribute('data-theme') === 'light'));
+      });
+    })();
+
+    /* -------------------------
+       Burger menu toggle guard
+       - Στο αρχείο σου αφαιρέθηκε το top nav, οπότε εδώ κάνουμε 'defensive' κώδικα
+       - Αν δεν υπάρχει nav (id="main-nav"), το κουμπί απλώς αλλάζει aria-expanded
+         και δεν προκαλεί σφάλματα (no-op). Αν το nav επιστραφεί στο μέλλον, η
+         συμπεριφορά ενεργοποιείται κανονικά.
+       ------------------------- */
+    (function(){
+      const burger = document.getElementById('burger-btn');
+      const nav = document.getElementById('main-nav'); // may be null (we removed the nav)
+
+      if (!nav) {
+        // Δεν υπάρχει nav: αποφεύγουμε σφάλματα και προσφέρουμε μικρό feedback στο mobile
+        burger.addEventListener('click', () => {
+          // toggle του attribute aria-expanded ως feedback
+          const expanded = burger.getAttribute('aria-expanded') === 'true';
+          burger.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+          // δεν ανοίγει τίποτα γιατί nav === null
+        });
+        // Επιστρέφουμε ώστε το υπόλοιπο του script να μην τρέξει
+        return;
+      }
+
+      // Αν υπάρχει nav, ενεργοποιούμε την κλασική συμπεριφορά toggle
+      burger.addEventListener('click', () => {
+        nav.classList.toggle('show');
+        // accessibility: ενημέρωση aria-expanded
+        const expanded = nav.classList.contains('show');
+        burger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+
+      // Κλείσιμο nav όταν κάνουμε κλικ σε link (mobile)
+      nav.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          if(nav.classList.contains('show')) nav.classList.remove('show');
+        });
+      });
+
+      // Κλείσιμο nav σε click έξω (mobile)
+      document.addEventListener('click', (e) => {
+        if(window.innerWidth <= 900){
+          if(!nav.contains(e.target) && !burger.contains(e.target)){
+            nav.classList.remove('show');
+          }
+        }
+      });
+    })();
+
+    /* -------------------------
+       Slides / Carousel behavior
+       - Αυτοματισμός εναλλαγής slides (auto-advance)
+       - Pause on hover/focus
+       - Dots clickable + keyboard accessible
+       - Swipe για touch συσκευές (απλό)
+       ------------------------- */
+    (function(){
+      const slidesWrap = document.getElementById('slides');
+      const slides = Array.from(slidesWrap.querySelectorAll('.slide'));
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      let current = 0;
+      let timeoutId = null;
+      const AUTO_DELAY = 4500; // ms
+
+      /* show(idx): εμφανίζει συγκεκριμένο slide βάσει index
+         - αφαιρεί .visible από όλα
+         - προσθέτει .visible στο επιλεγμένο
+         - ενημερώνει dots (.active) */
+      function show(idx){
+        slides.forEach(s => s.classList.remove('visible'));
+        dots.forEach(d => d.classList.remove('active'));
+        const slide = slides[idx];
+        if(!slide) return;
+        slide.classList.add('visible');
+        const dot = dots[idx];
+        if(dot) dot.classList.add('active');
+        current = idx;
+      }
+
+      /* next(): πάει στο επόμενο slide (με wrap-around) */
+      function next(){
+        const nxt = (current + 1) % slides.length;
+        show(nxt);
+      }
+
+      /* startAuto(): ξεκινάει το setInterval για auto-advance */
+      function startAuto(){
+        stopAuto();
+        timeoutId = setInterval(next, AUTO_DELAY);
+      }
+      /* stopAuto(): τερματίζει το interval */
+      function stopAuto(){
+        if(timeoutId){ clearInterval(timeoutId); timeoutId = null; }
+      }
+
+      /* Σύνδεση dots: click + keyboard (Enter / Space) */
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => { show(i); startAuto(); });
+        dot.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); show(i); startAuto(); }
+        });
+      });
+
+      /* Pause on hover / focus για καλύτερη UX */
+      slidesWrap.addEventListener('mouseenter', stopAuto);
+      slidesWrap.addEventListener('mouseleave', startAuto);
+      slidesWrap.addEventListener('focusin', stopAuto);
+      slidesWrap.addEventListener('focusout', startAuto);
+
+      /* Swipe support (πολύ απλό):
+         - καταγράφει touchstart X και touchend X
+         - αν μετακινήθηκε αρκετά δεξιά/αριστερά, αλλάζει slide
+      */
+      let touchStartX = 0;
+      let touchEndX = 0;
+      slidesWrap.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX }, {passive:true});
+      slidesWrap.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if(touchEndX + 40 < touchStartX) { next(); startAuto(); }
+        else if(touchEndX - 40 > touchStartX) { show((current - 1 + slides.length) % slides.length); startAuto(); }
+      }, {passive:true});
+
+      // init: δείχνουμε slide 0 και ξεκινάμε το auto
+      show(0);
+      startAuto();
+    })();
+
+    /* -------------------------
+       IntersectionObserver για reveal των section
+       - Όταν ένα section εισέλθει στο viewport, αφαιρείται το hidden
+         και προστίθεται visible, μετά το unobserve
+       ------------------------- */
+    (function(){
+      const sections = document.querySelectorAll('.section');
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if(e.isIntersecting){
+            e.target.classList.remove('hidden');
+            e.target.classList.add('visible');
+            obs.unobserve(e.target);
+          }
+        });
+      }, {threshold: .18});
+      sections.forEach(s => obs.observe(s));
+    })();
+
+    /* -------------------------
+       Accessibility niceties:
+       - ESC κλείνει mobile nav (αν υπάρχει)
+       - Focus outline management: εντοπίζει πρώτη φορά το Tab και ενεργοποιεί ορατό outline
+       ------------------------- */
+    (function(){
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape'){
+          const nav = document.getElementById('main-nav');
+          if(nav && nav.classList.contains('show')) nav.classList.remove('show');
+        }
+      });
+
+      // show focus outlines for keyboard users - ενεργοποιεί όταν ο χρήστης πατήσει Tab
+      function handleFirstTab(e) {
+        if (e.key === 'Tab') {
+          document.body.classList.add('show-focus');
+          window.removeEventListener('keydown', handleFirstTab);
+        }
+      }
+      window.addEventListener('keydown', handleFirstTab);
+    })();
+  </script>
+</body>
+</html>
+
+
+
+
